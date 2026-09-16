@@ -38,8 +38,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API Router
+# Register API Router with and without /api prefix for Vercel routing compatibility
 app.include_router(api_router, prefix="/api")
+app.include_router(api_router)
 
 
 
@@ -53,6 +54,7 @@ def root():
     }
 
 
+@app.get("/test", tags=["Diagnostic"])
 @app.get("/api/test", tags=["Diagnostic"])
 def api_test():
     from backend.app.core.database import check_db_connection

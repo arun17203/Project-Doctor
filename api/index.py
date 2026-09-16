@@ -32,17 +32,14 @@ except Exception:
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-# Top-level ASGI / WSGI entrypoints required by Vercel Function runtime static analyzer
+# Top-level ASGI entrypoint required by Vercel Function runtime for FastAPI
 app = FastAPI(title="Project Doctor")
-application = app
-handler = app
 
 init_error = None
 try:
     from backend.app.main import app as backend_app
     app = backend_app
-    application = backend_app
-    handler = backend_app
+
 
     # Automatically initialize database tables on cold start
     try:
