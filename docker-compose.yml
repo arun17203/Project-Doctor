@@ -1,0 +1,83 @@
+services:
+  # ============================================================================
+  # Database Service (PostgreSQL 16)
+  # ============================================================================
+  db:
+    image: postgres:16-alpine
+    container_name: project-doctor-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-project_doctor}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-project_doctor}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - project-doctor-net
+
+  # ============================================================================
+  # Backend Analysis Engine (FastAPI + Python 3.11)
+  # ============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: project-doctor-backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_secure_password}@db:5432/${POSTGRES_DB:-project_doctor}
+      SECRET_KEY: ${SECRET_KEY:-project-doctor-production-secret-key-min-32-chars}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      DEBUG: "False"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      CORS_ORIGINS: "http://localhost,http://127.0.0.1,http://localhost:80,http://frontend"
+    volumes:
+      - backend_storage:/app/storage
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - project-doctor-net
+
+  # ============================================================================
+  # Frontend Web Interface (React 19 + Vite + Nginx)
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: project-doctor-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - project-doctor-net
+
+volumes:
+  postgres_data:
+    name: project-doctor-postgres-data
+  backend_storage:
+    name: project-doctor-backend-storage
+
+networks:
+  project-doctor-net:
+    name: project-doctor-network
+    driver: bridge
