@@ -53,8 +53,13 @@ except Exception as err:
     init_error = traceback.format_exc()
     print(f"CRITICAL BACKEND STARTUP ERROR:\n{init_error}", file=sys.stderr)
 
+    @app.get("/")
+    @app.get("/test")
+    @app.get("/api/test")
+    @app.get("/health")
+    @app.get("/api/health")
     @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
-    async def fallback_route(path: str):
+    async def fallback_route(path: str = ""):
         return JSONResponse(
             status_code=500,
             content={

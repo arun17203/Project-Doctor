@@ -10,7 +10,17 @@
     },
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": [
+          "backend/**"
+        ],
+        "excludeFiles": [
+          "backend/venv/**",
+          "backend/storage/**",
+          "backend/tests/**"
+        ]
+      }
     }
   ],
   "routes": [
