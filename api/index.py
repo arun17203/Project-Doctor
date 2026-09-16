@@ -24,34 +24,17 @@ try:
 except Exception:
     pass
 
+from backend.app.main import app as backend_app
+
+# Top-level ASGI / WSGI entrypoints required by Vercel Function runtime
+app = backend_app
+application = backend_app
+handler = backend_app
+
+# Automatically initialize database tables on cold start
 try:
     from backend.app.core.database import init_db
-    from backend.app.main import app
-
-    # Automatically initialize database tables on cold start
-    try:
-        init_db()
-    except Exception as err:
-        print(f"Serverless init_db notice: {err}", file=sys.stderr)
-
-except Exception as exc:
-    import traceback
-    err_tb = traceback.format_exc()
-    print(f"Serverless app startup error:\n{err_tb}", file=sys.stderr)
-
-    from fastapi import FastAPI
-    from fastapi.responses import JSONResponse
-
-    app = FastAPI(title="Project Doctor Error Fallback")
-
-    @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"])
-    async def fallback_error_handler(path: str):
-        return JSONResponse(
-            status_code=500,
-            content={
-                "error": "Backend initialization failed",
-                "details": str(exc),
-                "path": path,
-            },
-        )
+    init_db()
+except Exception as err:
+    print(f"Serverless init_db notice: {err}", file=sys.stderr)
 
