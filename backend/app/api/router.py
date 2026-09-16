@@ -14,6 +14,7 @@ from backend.app.api.health_analyzer import health_router
 from backend.app.api.ai_explainer import router as ai_explainer_router
 from backend.app.api.codebase_qa import qa_router
 from backend.app.api.history import history_router
+from backend.app.api.remediation import remediation_router
 
 api_router = APIRouter()
 
@@ -29,6 +30,7 @@ api_router.include_router(health_router)
 api_router.include_router(ai_explainer_router)
 api_router.include_router(qa_router)
 api_router.include_router(history_router)
+api_router.include_router(remediation_router)
 
 
 @api_router.get("/health", response_model=HealthResponse, tags=["Health"])

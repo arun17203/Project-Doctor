@@ -24,6 +24,7 @@ import type {
   SnapshotDetail,
   VersionComparisonResponse,
 } from '../types/history'
+import type { DoctorPrescription } from '../types/remediation'
 
 export const projectService = {
   async createProject(payload: ProjectCreatePayload): Promise<Project> {
@@ -380,6 +381,18 @@ export const projectService = {
   async createSnapshot(projectId: string, summary?: string): Promise<SnapshotDetail> {
     const response = await api.post<SnapshotDetail>(`/projects/${projectId}/snapshots`, {
       summary,
+    })
+    return response.data
+  },
+
+  async getRemediation(projectId: string): Promise<DoctorPrescription> {
+    const response = await api.get<DoctorPrescription>(`/projects/${projectId}/remediation`)
+    return response.data
+  },
+
+  async downloadPatch(projectId: string): Promise<Blob> {
+    const response = await api.get(`/projects/${projectId}/remediation/download`, {
+      responseType: 'blob',
     })
     return response.data
   },

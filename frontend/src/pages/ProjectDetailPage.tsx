@@ -35,7 +35,8 @@ import {
   Network,
   HeartPulse,
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  Stethoscope,
 } from 'lucide-react'
 import { projectService } from '../services/projectService'
 import FileExplorer from '../components/scanner/FileExplorer'
@@ -46,6 +47,8 @@ import { ArchitectureGraph } from '../components/architecture/ArchitectureGraph'
 import HealthDashboard from '../components/health/HealthDashboard'
 import { AskCodebase } from '../components/qa/AskCodebase'
 import HistoryDashboard from '../components/history/HistoryDashboard'
+import { PrescriptionDashboard } from '../components/remediation/PrescriptionDashboard'
+import { DiagnosticReportModal } from '../components/health/DiagnosticReportModal'
 import { AppShell } from '../components/layout/AppShell'
 import { StatusBadge } from '../components/common/StatusBadge'
 import { useToast } from '../context/ToastContext'
@@ -60,6 +63,7 @@ import type { HealthAnalysis } from '../types/health'
 
 const TAB_LABELS: Record<string, string> = {
   health: 'Health & Diagnostics',
+  prescription: "Doctor's Prescription",
   scanner: 'Repository Structure',
   quality: 'Code Quality',
   security: 'Security Audit',
@@ -106,7 +110,8 @@ export default function ProjectDetailPage() {
   const [scanError, setScanError] = useState<string | null>(null)
 
   // Stage 13 UI state
-  const [activeTab, setActiveTab] = useState<'health' | 'scanner' | 'quality' | 'security' | 'dependencies' | 'architecture' | 'qa' | 'history'>('health')
+  const [activeTab, setActiveTab] = useState<'health' | 'prescription' | 'scanner' | 'quality' | 'security' | 'dependencies' | 'architecture' | 'qa' | 'history'>('health')
+  const [showAuditModal, setShowAuditModal] = useState(false)
   useDocumentTitle('Project Doctor', project ? `${project.name} · ${TAB_LABELS[activeTab] || 'Diagnostics'}` : 'Project Diagnostics')
   const { success, error: toastError, info } = useToast()
   const [runningFullAnalysis, setRunningFullAnalysis] = useState(false)
@@ -598,6 +603,16 @@ export default function ProjectDetailPage() {
             {/* Header Action Buttons */}
             <div className="flex items-center gap-2 shrink-0">
               <button
+                onClick={() => setShowAuditModal(true)}
+                disabled={!healthAnalysis}
+                className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                title="Export executive codebase medical chart & compliance audit certificate"
+              >
+                <FileText className="h-4 w-4 text-indigo-400" />
+                <span className="hidden sm:inline">Export Audit Report</span>
+              </button>
+
+              <button
                 onClick={handleRunFullAnalysis}
                 disabled={runningFullAnalysis || project.status !== 'READY'}
                 className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -766,6 +781,22 @@ export default function ProjectDetailPage() {
                 Ready
               </span>
             )}
+          </button>
+
+          {/* Doctor's Prescription / Auto-Fix */}
+          <button
+            onClick={() => setActiveTab('prescription')}
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-mono font-medium transition whitespace-nowrap ${
+              activeTab === 'prescription'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900/60'
+            }`}
+          >
+            <Stethoscope className="h-4 w-4" />
+            <span>Doctor's Prescription</span>
+            <span className="ml-1 px-1.5 py-0.2 rounded bg-indigo-950 text-indigo-300 text-[10px] font-bold">
+              Auto-Fix
+            </span>
           </button>
 
           {/* Scanner */}
@@ -2036,6 +2067,14 @@ export default function ProjectDetailPage() {
           </div>
         )}
 
+        {/* Tab: Doctor's Prescription & Auto-Fix Section */}
+        {activeTab === 'prescription' && (
+          <PrescriptionDashboard
+            projectId={project.id}
+            projectName={project.name}
+          />
+        )}
+
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
@@ -2075,6 +2114,19 @@ export default function ProjectDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Executive Diagnostic Audit Report Modal */}
+        <DiagnosticReportModal
+          isOpen={showAuditModal}
+          onClose={() => setShowAuditModal(false)}
+          project={project}
+          health={healthAnalysis}
+          scan={scan}
+          securityAnalysis={securityAnalysis}
+          qualityAnalysis={qualityAnalysis}
+          dependencyAnalysis={dependencyAnalysis}
+          architectureAnalysis={architectureAnalysis}
+        />
       </div>
     </AppShell>
   )
