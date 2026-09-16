@@ -1,5 +1,9 @@
 import os
 from typing import List, Optional
+
+# Prevent GitPython from attempting to invoke git binary during module initialization
+os.environ.setdefault("GIT_PYTHON_REFRESH", "0")
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import field_validator
 
@@ -38,6 +42,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://project-doctor-one.vercel.app",
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")
@@ -53,8 +58,28 @@ class Settings(BaseSettings):
         if self.PROJECT_STORAGE_PATH and self.PROJECT_STORAGE_PATH.strip():
             self.STORAGE_DIR = os.path.abspath(self.PROJECT_STORAGE_PATH.strip())
 
+        # Detect serverless execution environments (Vercel, AWS Lambda, or read-only container)
+        is_serverless = bool(
+            os.environ.get("VERCEL")
+            or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+            or os.environ.get("LAMBDA_TASK_ROOT")
+        )
+        if is_serverless:
+            if not self.PROJECT_STORAGE_PATH:
+                self.STORAGE_DIR = "/tmp/storage"
+            if self.DATABASE_URL == "sqlite:///./project_doctor.db":
+                self.DATABASE_URL = "sqlite:////tmp/project_doctor.db"
+
 
 settings = Settings()
 
-# Ensure storage directory exists
-os.makedirs(settings.STORAGE_DIR, exist_ok=True)
+# Ensure storage directory exists safely without crashing read-only filesystems
+try:
+    os.makedirs(settings.STORAGE_DIR, exist_ok=True)
+except OSError:
+    settings.STORAGE_DIR = "/tmp/storage"
+    try:
+        os.makedirs(settings.STORAGE_DIR, exist_ok=True)
+    except Exception:
+        pass
+

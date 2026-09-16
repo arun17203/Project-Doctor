@@ -1,9 +1,13 @@
 import os
 import shutil
-import git
 from typing import Tuple
 from backend.app.schemas.project import GITHUB_URL_REGEX
 from backend.app.services.extractor import IGNORED_DIRS
+
+try:
+    import git
+except Exception:
+    git = None
 
 
 def clone_github_repo(github_url: str, target_dir: str) -> Tuple[int, str]:
@@ -12,6 +16,12 @@ def clone_github_repo(github_url: str, target_dir: str) -> Tuple[int, str]:
     Returns:
         Tuple[int, str]: (source_files_count, target_dir)
     """
+    if git is None:
+        raise ValueError(
+            "Git command-line utility is not available in this serverless environment. "
+            "Please download your repository and upload it as a ZIP archive instead."
+        )
+
     github_url = github_url.strip()
     if not GITHUB_URL_REGEX.match(github_url):
         raise ValueError("Invalid GitHub repository URL format. Expected: https://github.com/owner/repo")
@@ -35,7 +45,7 @@ def clone_github_repo(github_url: str, target_dir: str) -> Tuple[int, str]:
             env=env,
             multi_options=["--single-branch"],
         )
-    except git.exc.GitCommandError as e:
+    except Exception as e:
         # Clean up failed clone directory
         shutil.rmtree(target_dir, ignore_errors=True)
         err_msg = str(e).lower()
@@ -44,10 +54,8 @@ def clone_github_repo(github_url: str, target_dir: str) -> Tuple[int, str]:
         elif "could not resolve host" in err_msg or "unable to access" in err_msg:
             raise ValueError("Network error: Unable to reach GitHub. Please check network connectivity.") from e
         else:
-            raise ValueError(f"Failed to clone repository: {e.stderr or str(e)}") from e
-    except Exception as e:
-        shutil.rmtree(target_dir, ignore_errors=True)
-        raise ValueError(f"Unexpected error during GitHub clone: {str(e)}") from e
+            stderr = getattr(e, "stderr", None)
+            raise ValueError(f"Failed to clone repository: {stderr or str(e)}") from e
 
     # Post-clone sanitization:
     # 1. Remove .git directory to eliminate git hooks and save disk space
