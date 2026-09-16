@@ -55,9 +55,9 @@ def init_db():
             existing = db.query(User).filter(User.email == "developer@example.com").first()
             if not existing:
                 demo_user = User(
+                    name="Demo Developer",
                     email="developer@example.com",
-                    hashed_password=hash_password("password123"),
-                    full_name="Demo Developer",
+                    password_hash=hash_password("password123"),
                     is_active=True,
                 )
                 db.add(demo_user)
