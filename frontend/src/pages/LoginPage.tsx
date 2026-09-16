@@ -150,6 +150,18 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('developer@example.com')
+                setPassword('password123')
+              }}
+              className="w-full py-2 px-3 rounded-lg border border-slate-700/80 hover:border-slate-600 bg-slate-800/40 hover:bg-slate-800/80 text-xs text-slate-300 transition duration-150 flex items-center justify-center space-x-1.5"
+            >
+              <span>Quick Fill Demo:</span>
+              <span className="font-mono text-blue-400">developer@example.com</span>
+            </button>
           </form>
 
           {/* Switch to Register */}

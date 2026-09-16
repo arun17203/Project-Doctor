@@ -46,3 +46,22 @@ def init_db():
     # Import all models here so that Base.metadata has them registered
     import backend.app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)
+
+    # Seed default developer demo user for instant login
+    try:
+        from backend.app.models.user import User
+        from backend.app.core.security import hash_password
+        with SessionLocal() as db:
+            existing = db.query(User).filter(User.email == "developer@example.com").first()
+            if not existing:
+                demo_user = User(
+                    email="developer@example.com",
+                    hashed_password=hash_password("password123"),
+                    full_name="Demo Developer",
+                    is_active=True,
+                )
+                db.add(demo_user)
+                db.commit()
+    except Exception as e:
+        print(f"Auto-seed demo user notice: {e}")
+
