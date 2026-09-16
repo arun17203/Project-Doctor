@@ -57,7 +57,7 @@ def init_db():
                 demo_user = User(
                     name="Demo Developer",
                     email="developer@example.com",
-                    password_hash=hash_password("password123"),
+                    password_hash="$2b$12$qqP5a5vZaRuOORVtLQxV.u5O0hPLHPaEOnaRjemiLrHBRm4Iv4Sxa",
                     is_active=True,
                 )
                 db.add(demo_user)

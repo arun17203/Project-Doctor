@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import List, Optional, Union, Any
 
 # Prevent GitPython from attempting to invoke git binary during module initialization
 os.environ.setdefault("GIT_PYTHON_REFRESH", "0")
@@ -37,20 +37,34 @@ class Settings(BaseSettings):
     PROJECT_STORAGE_PATH: Optional[str] = None
 
     # CORS
-    CORS_ORIGINS: List[str] = [
+    CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://project-doctor-one.vercel.app",
+        "*",
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
-    def assemble_cors_origins(cls, v):
+    def assemble_cors_origins(cls, v: Any) -> List[str]:
         if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return ["*"]
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    import json
+                    parsed = json.loads(v)
+                    if isinstance(parsed, list):
+                        return [str(i).strip() for i in parsed if str(i).strip()]
+                except Exception:
+                    pass
             return [i.strip() for i in v.split(",") if i.strip()]
-        return v
+        if isinstance(v, (list, tuple, set)):
+            return [str(i).strip() for i in v if str(i).strip()]
+        return ["*"]
 
     def model_post_init(self, __context):
         if self.JWT_SECRET and self.JWT_SECRET.strip():

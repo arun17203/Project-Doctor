@@ -51,6 +51,7 @@ try:
 except Exception as err:
     import traceback
     init_error = traceback.format_exc()
+    init_err_msg = str(err)
     print(f"CRITICAL BACKEND STARTUP ERROR:\n{init_error}", file=sys.stderr)
 
     @app.get("/")
@@ -64,7 +65,7 @@ except Exception as err:
             status_code=500,
             content={
                 "error": "Backend initialization failed",
-                "details": str(err),
+                "details": init_err_msg,
                 "traceback": init_error,
                 "cwd": os.getcwd(),
                 "sys_path": sys.path,
