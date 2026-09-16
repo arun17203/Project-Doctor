@@ -1,5 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import traceback
+import sys
+
 from backend.app.core.config import settings
 from backend.app.api.router import api_router
 
@@ -10,6 +14,20 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    tb = traceback.format_exc()
+    print(f"UNHANDLED EXCEPTION on {request.method} {request.url.path}:\n{tb}", file=sys.stderr)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error_type": type(exc).__name__,
+            "error_detail": str(exc),
+            "traceback": tb,
+            "path": str(request.url.path),
+        },
+    )
 
 # Configure CORS for frontend access
 app.add_middleware(
@@ -24,6 +42,7 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 
+
 @app.get("/")
 def root():
     return {
@@ -32,6 +51,17 @@ def root():
         "status": "online",
         "docs": "/docs",
     }
+
+
+@app.get("/api/test", tags=["Diagnostic"])
+def api_test():
+    from backend.app.core.database import check_db_connection
+    return {
+        "status": "ok",
+        "database": "connected" if check_db_connection() else "disconnected",
+        "message": "Project Doctor backend is running cleanly on Vercel!",
+    }
+
 
 
 @app.get("/health", tags=["Health"])
