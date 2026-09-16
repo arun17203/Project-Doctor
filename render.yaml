@@ -1,0 +1,42 @@
+services:
+  # 1. Project Doctor Backend API Service (FastAPI + Python)
+  - type: web
+    name: project-doctor-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: .
+    region: oregon
+    plan: free
+    branch: main
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        value: sqlite:///./project_doctor.db
+
+  # 2. Project Doctor Frontend Web App (React + Vite SPA)
+  - type: web
+    name: project-doctor-web
+    runtime: static
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: project-doctor-api
+          envVarKey: RENDER_EXTERNAL_URL
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

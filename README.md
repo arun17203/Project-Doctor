@@ -1,12 +1,12 @@
 # Project Doctor — Intelligent Software Diagnostics & Codebase Intelligence Platform
 
-[![CI Pipeline](https://github.com/project-doctor/project-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/project-doctor/project-doctor/actions)
+[![CI Pipeline](https://github.com/arun17203/Project-Doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/arun17203/Project-Doctor/actions)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-19.2+-61DAFB.svg?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-336791.svg?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
 
 **Project Doctor** is a production-grade, multi-stage static analysis and codebase intelligence platform. Designed as a "Doctor for Software," it diagnoses repository health, detects security vulnerabilities, audits software dependencies against public advisories, maps module architecture and circular dependencies, estimates technical debt, and provides grounded AI explanations and contextual Q&A—all without ever executing user source code.
 
@@ -197,6 +197,26 @@ zip -r demo.zip demo_repository/
 ```
 
 Upload `demo.zip` in Project Doctor to view detected vulnerabilities (SQL Injection, hardcoded AWS keys, MD5 hashing, circular import cycle, and cyclomatic complexity).
+
+---
+
+## Cloud Deployment (Online Hosting)
+
+### 🚀 1-Click Deployment to Render (Backend & Frontend)
+Deploy both the Backend Web Service and Frontend Web App to [Render.com](https://render.com) in one click:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
+
+Render reads [`render.yaml`](render.yaml) from your repository and automatically deploys:
+1. **`project-doctor-api`**: Dockerized FastAPI backend with Python 3.11, git cloner, AST analyzers, and database migrations.
+2. **`project-doctor-web`**: React 19 + Vite frontend with SPA routing and automatic API connection.
+
+### 🌐 Alternative: Vercel (Frontend) + Render (Backend)
+- **Backend on Render**: Link `https://github.com/arun17203/Project-Doctor`, set runtime to **Docker** (`backend/Dockerfile`).
+- **Frontend on Vercel**: Import `https://github.com/arun17203/Project-Doctor`, set Root Directory to **`frontend`**, and set:
+  ```env
+  VITE_API_URL=https://your-project-doctor-api.onrender.com/api
+  ```
 
 ---
 
