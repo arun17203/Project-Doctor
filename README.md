@@ -6,6 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farun17203%2FProject-Doctor)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
 
 **Project Doctor** is a production-grade, multi-stage static analysis and codebase intelligence platform. Designed as a "Doctor for Software," it diagnoses repository health, detects security vulnerabilities, audits software dependencies against public advisories, maps module architecture and circular dependencies, estimates technical debt, and provides grounded AI explanations and contextual Q&A—all without ever executing user source code.
@@ -202,21 +203,19 @@ Upload `demo.zip` in Project Doctor to view detected vulnerabilities (SQL Inject
 
 ## Cloud Deployment (Online Hosting)
 
-### 🚀 1-Click Deployment to Render (Backend & Frontend)
-Deploy both the Backend Web Service and Frontend Web App to [Render.com](https://render.com) in one click:
+### ⚡ 1-Click Full-Stack Deployment to Vercel (Frontend + Backend)
+Deploy both the React 19 Frontend and Python FastAPI Backend together on **Vercel** with zero configuration:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farun17203%2FProject-Doctor)
+
+Vercel reads [`vercel.json`](vercel.json) from the repository root and deploys:
+1. **React 19 + Vite Frontend**: Served on high-speed global Edge CDN.
+2. **FastAPI Backend (Serverless)**: Serverless Python function (`api/index.py`) handling all `/api/*` endpoints on the **exact same domain** (no CORS needed!).
+
+### 🚀 1-Click Deployment to Render (Containerized)
+Deploy the full-stack containerized architecture to [Render.com](https://render.com):
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
-
-Render reads [`render.yaml`](render.yaml) from your repository and automatically deploys:
-1. **`project-doctor-api`**: Dockerized FastAPI backend with Python 3.11, git cloner, AST analyzers, and database migrations.
-2. **`project-doctor-web`**: React 19 + Vite frontend with SPA routing and automatic API connection.
-
-### 🌐 Alternative: Vercel (Frontend) + Render (Backend)
-- **Backend on Render**: Link `https://github.com/arun17203/Project-Doctor`, set runtime to **Docker** (`backend/Dockerfile`).
-- **Frontend on Vercel**: Import `https://github.com/arun17203/Project-Doctor`, set Root Directory to **`frontend`**, and set:
-  ```env
-  VITE_API_URL=https://your-project-doctor-api.onrender.com/api
-  ```
 
 ---
 
