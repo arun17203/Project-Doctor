@@ -8,6 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farun17203%2FProject-Doctor)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
+[![Vercel Frontend](https://img.shields.io/badge/Frontend-Vercel%20Live-black?logo=vercel)](https://project-doctor-one.vercel.app)
+[![Render Backend](https://img.shields.io/badge/Backend-Render%20Live-46E3B7?logo=render)](https://project-doctor-api.onrender.com)
 
 **Project Doctor** is a production-grade, multi-stage static analysis and codebase intelligence platform. Designed as a "Doctor for Software," it diagnoses repository health, detects security vulnerabilities, audits software dependencies against public advisories, maps module architecture and circular dependencies, estimates technical debt, and provides grounded AI explanations and contextual Q&A—all without ever executing user source code.
 
@@ -94,8 +96,11 @@ flowchart TD
 | **11** | **Ask My Codebase Q&A** | Interactive AI assistant answering questions using strictly verified citations from repository AST files. |
 | **12** | **Analysis History & Trends** | Immutable analysis snapshots over time, delta calculations ($\Delta$ Health, $\Delta$ Debt, $\Delta$ Issues), file diffs. |
 | **13** | **Developer UI Polish** | Production dark theme with Tailwind CSS, responsive sidebars, interactive diagrams, keyboard shortcuts. |
-| **14** | **Automated Testing** | 95+ unit and integration tests (100% pass rate), ZIP slip security tests, Alembic clean DB tests, Vitest. |
-| **15** | **Deployment & Docker** | Multi-stage Docker containers, non-root user execution, Nginx SPA proxy, CI/CD GitHub Actions. |
+| **14** | **Automated Testing** | 105 unit and integration tests (100% pass rate), ZIP slip security tests, Alembic clean DB tests, Vitest. |
+| **15** | **Deployment & Docker** | Multi-stage Docker containers, non-root user execution, Render API deployment, Vercel SPA edge hosting. |
+| **16** | **The Automated Prescription** | One-click unified Git `.patch` generator targeting verified vulnerabilities, complexity, and dependencies. |
+| **17** | **Executive Audit & PDF** | Printable Medical Chart report with letter grades (A–F), OWASP compliance breakdown, and `@media print` export. |
+| **18** | **CLI Companion** | Standalone command-line scanner (`python -m backend.app.cli scan <target_directory> --fail-under 80`) for local and CI/CD use. |
 
 ---
 
@@ -201,21 +206,32 @@ Upload `demo.zip` in Project Doctor to view detected vulnerabilities (SQL Inject
 
 ---
 
-## Cloud Deployment (Online Hosting)
+## Cloud Deployment & Production Live Links
 
-### ⚡ 1-Click Full-Stack Deployment to Vercel (Frontend + Backend)
-Deploy both the React 19 Frontend and Python FastAPI Backend together on **Vercel** with zero configuration:
+Project Doctor is deployed on a decoupled, production-ready cloud architecture:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farun17203%2FProject-Doctor)
+| Component | Platform | Live URL | Description |
+|---|---|---|---|
+| **Frontend Web App** | **Vercel** | [https://project-doctor-one.vercel.app](https://project-doctor-one.vercel.app) | React 19 + Vite SPA served on global Edge CDN |
+| **Backend API Service** | **Render** | [https://project-doctor-api.onrender.com](https://project-doctor-api.onrender.com) | Containerized FastAPI + Uvicorn service |
+| **Interactive API Docs** | **Render** | [https://project-doctor-api.onrender.com/docs](https://project-doctor-api.onrender.com/docs) | Swagger UI for exploring all REST endpoints |
 
-Vercel reads [`vercel.json`](vercel.json) from the repository root and deploys:
-1. **React 19 + Vite Frontend**: Served on high-speed global Edge CDN.
-2. **FastAPI Backend (Serverless)**: Serverless Python function (`api/index.py`) handling all `/api/*` endpoints on the **exact same domain** (no CORS needed!).
+### Instant Demo Access:
+* **Sign In URL**: [https://project-doctor-one.vercel.app/login](https://project-doctor-one.vercel.app/login)
+* **Email**: `developer@example.com`
+* **Password**: `password123`
+*(You can also register a new account on the Sign Up tab).*
 
-### 🚀 1-Click Deployment to Render (Containerized)
-Deploy the full-stack containerized architecture to [Render.com](https://render.com):
+### How the Architecture Works:
+1. **Frontend Hosting (Vercel)**:
+   - Configured via [`vercel.json`](vercel.json) to compile the React Vite SPA and serve it on Vercel's global CDN.
+   - Transparently proxies `/api/(.*)` requests to the Render backend, providing zero-CORS communication without manual client-side configuration.
+2. **Backend Service (Render)**:
+   - Configured via [`render.yaml`](render.yaml) and [`backend/Dockerfile`](backend/Dockerfile) with Python 3.11-slim, non-root security execution, and dynamic `$PORT` binding.
+   - Automatically initializes SQLite tables and pre-seeds the developer account on startup.
+3. **CI/CD Pipeline (GitHub Actions)**:
+   - Runs automated linting, Vitest tests, and the complete 105-test Pytest matrix on every push to `main`.
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/arun17203/Project-Doctor)
 
 ---
 
