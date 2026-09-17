@@ -42,6 +42,15 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 
+@app.on_event("startup")
+def on_startup():
+    from backend.app.core.database import init_db
+    try:
+        init_db()
+        print("Database initialized and demo user seeded successfully!")
+    except Exception as e:
+        print(f"Database startup notice: {e}", file=sys.stderr)
+
 
 @app.get("/")
 def root():
